@@ -1,0 +1,62 @@
+个人工具
+========
+
+菜单栏里的两个功能：
+
+1. 反转普通鼠标滚轮，触控板和妙控鼠标保持 macOS「自然滚动」。
+2. 连按两次 Command 键（按下再松开）取色。放大镜跟随指针，点击复制 HEX，Esc 取消。
+
+这个安装包是临时签名（ad-hoc），没有付费的 Apple 开发者证书，也没有公证（notarization）。
+从网络下载后，macOS 第一次打开时会拦截。这是 Gatekeeper 的正常反应，不是文件坏了。
+
+安装
+----
+1. 把「个人工具.app」拖到「应用程序」文件夹。
+2. 按住 Control 点按（或右键）应用，选择「打开」，再点一次「打开」。
+   如果系统提示应用已损坏或来自身份不明的开发者，在终端执行：
+
+   xattr -dr com.apple.quarantine "/Applications/个人工具.app"
+
+3. 菜单栏会出现一个取色滴管图标，程序坞里没有图标。
+4. 按系统提示允许「辅助功能」和「屏幕录制」。
+   也可以从菜单打开：系统设置 → 隐私与安全性 → 辅助功能 / 屏幕录制。
+   如果之前点过不允许，macOS 不会反复弹窗，需要在系统设置里手动打开。
+5. 让「自然滚动」保持打开：系统设置 → 鼠标，以及系统设置 → 触控板。
+6. 如果还在运行单独的 Mouse Scroll Flip，请退出它。两份一起运行会把滚轮翻转两次。
+
+取色
+----
+快速连按两次 Command。按住不放，或和 C、Tab 等键一起按，不会触发。
+只有放大镜出现时，左键和 Esc 才会被取色器使用。平时的快捷键和滚轮不会被拦截。
+
+登录时启动用的是系统的「登录项」。请把应用留在「应用程序」文件夹。
+
+
+Personal Tools
+==============
+
+Menu-bar utilities:
+
+1. Reverse a normal mouse wheel. Trackpad and Magic Mouse keep macOS natural scrolling.
+2. Double-tap the Command key (press and release, twice) to pick a screen color.
+   The loupe follows the pointer. Click copies a HEX value. Escape cancels.
+
+This build is ad-hoc signed. It is not notarized and it does not use a paid
+Apple Developer certificate. macOS quarantines the download. That Gatekeeper
+warning does not mean the file is damaged.
+
+Install
+-------
+1. Drag 个人工具.app to the Applications folder.
+2. Control-click the app, choose Open, then Open again.
+   If macOS says the app is damaged or from an unidentified developer:
+
+   xattr -dr com.apple.quarantine "/Applications/个人工具.app"
+
+3. An eyedropper icon appears in the menu bar. There is no Dock icon.
+4. Allow Accessibility and Screen Recording when macOS asks.
+   If you previously denied either one, turn 个人工具 on under
+   System Settings → Privacy & Security.
+5. Leave Natural scrolling on for Mouse and Trackpad.
+6. Quit the standalone Mouse Scroll Flip app if it is running. Two copies
+   invert the wheel twice and cancel each other.

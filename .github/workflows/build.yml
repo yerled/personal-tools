@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - "cursor/**"
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Xcode and Swift
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app || true
+          xcodebuild -version
+          swift --version
+
+      - name: Unit tests
+        run: swift test
+
+      - name: Build universal app
+        run: ./scripts/build-app.sh
+
+      - name: Verify package
+        run: ./scripts/verify-package.sh
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: PersonalTools-${{ github.run_id }}
+          path: |
+            dist/*.zip
+            dist/*.dmg
+            dist/package-report.txt
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/*.dmg
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          body: |
+            个人工具：菜单栏里的鼠标滚轮反转和屏幕取色。通用二进制（Apple 芯片和 Intel），最低 macOS 13。临时签名（ad-hoc），没有公证。
+
+            ## 安装
+
+            1. 下载 `PersonalTools-*-macOS.dmg`（或 `.zip`）。
+            2. 把「个人工具」拖到「应用程序」。
+            3. 右键应用，选择「打开」，再点一次「打开」。若系统提示已损坏：
+               `xattr -dr com.apple.quarantine "/Applications/个人工具.app"`
+            4. 允许「辅助功能」和「屏幕录制」。保持「自然滚动」打开。
+            5. 连按两次 Command（按下并松开）取色。点击复制 HEX，Esc 取消。按住 Command 或 Command-C / Command-Tab 不会触发。
+
+            Ad-hoc signed, not notarized. No paid Apple Developer certificate is used. Trackpad scrolling is unchanged. Quit the standalone Mouse Scroll Flip app before using this one.
