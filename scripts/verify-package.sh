@@ -88,8 +88,11 @@ note "$SPCTL"
 note "spctl exit: $SPCTL_STATUS"
 
 note "zip entries:"
-unzip -l "${ZIP[0]}" | tee -a "$REPORT"
-unzip -l "${ZIP[0]}" | grep -q "Contents/MacOS/PersonalTools" || fail "zip is missing the executable"
+# Capture the listing first. `grep -q` exits early and SIGPIPE makes unzip
+# return non-zero, which `pipefail` would treat as a missing executable.
+ZIP_LISTING="$(unzip -l "${ZIP[0]}")"
+printf '%s\n' "$ZIP_LISTING" | tee -a "$REPORT"
+printf '%s\n' "$ZIP_LISTING" | grep -q "Contents/MacOS/PersonalTools" || fail "zip is missing the executable"
 
 note "sha256:"
 shasum -a 256 "${ZIP[0]}" "${DMG[0]}" | tee -a "$REPORT"
