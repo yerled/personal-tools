@@ -1,4 +1,5 @@
 import AppKit
+import PersonalToolsCore
 
 /// Menu-bar owner. Tools add their own items. One 1 Hz timer runs only while
 /// at least one feature is enabled, to notice permission changes. It does not
