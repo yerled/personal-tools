@@ -42,9 +42,13 @@ final class MacSDKTests: XCTestCase {
             XCTFail("Could not create a bitmap context")
             return
         }
-        context.setFillColor(CGColor(red: 1, green: 0, blue: 0, alpha: 1))
+        context.setAllowsAntialiasing(false)
+        context.setShouldAntialias(false)
+        context.interpolationQuality = .none
+        // Components are in this context's device RGB, so the pixels stay exact.
+        context.setFillColor(CGColor(colorSpace: space, components: [1, 0, 0, 1])!)
         context.fill(CGRect(x: 0, y: 0, width: 2, height: 2))
-        context.setFillColor(CGColor(red: 0, green: 0, blue: 1, alpha: 1))
+        context.setFillColor(CGColor(colorSpace: space, components: [0, 0, 1, 1])!)
         // User space is y-up, so y = 1 is the top row of a 2-pixel image.
         context.fill(CGRect(x: 0, y: 1, width: 2, height: 1))
         guard let image = context.makeImage(), let buffer = CGImageReader.bitmap(from: image) else {

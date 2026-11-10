@@ -29,20 +29,31 @@ public enum CGImageReader {
             }
             context.interpolationQuality = .none
             context.setAllowsAntialiasing(false)
-            // Context user space is bottom-left. Flip it so row 0 of `bytes` is the top.
+            context.setShouldAntialias(false)
             context.translateBy(x: 0, y: CGFloat(height))
             context.scaleBy(x: 1, y: -1)
             context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
             return true
         }
         guard drew else { return nil }
+        // On macOS 26 the draw above still leaves the source's bottom row at index 0.
+        // Swap so row 0 is the top. PersonalToolsMacTests locks that contract.
+        var topFirst = [UInt8](repeating: 0, count: bytes.count)
+        for row in 0..<height {
+            let source = (height - 1 - row) * bytesPerRow
+            let destination = row * bytesPerRow
+            topFirst.replaceSubrange(
+                destination..<(destination + bytesPerRow),
+                with: bytes[source..<(source + bytesPerRow)]
+            )
+        }
         return BitmapBuffer(
             width: width,
             height: height,
             bytesPerRow: bytesPerRow,
             order: .bgra,
             premultipliedAlpha: true,
-            bytes: bytes
+            bytes: topFirst
         )
     }
 }
