@@ -92,7 +92,10 @@ note "zip entries:"
 # return non-zero, which `pipefail` would treat as a missing executable.
 ZIP_LISTING="$(unzip -l "${ZIP[0]}")"
 printf '%s\n' "$ZIP_LISTING" | tee -a "$REPORT"
-printf '%s\n' "$ZIP_LISTING" | grep -q "Contents/MacOS/PersonalTools" || fail "zip is missing the executable"
+case "$ZIP_LISTING" in
+  *"Contents/MacOS/PersonalTools"*) ;;
+  *) fail "zip is missing the executable" ;;
+esac
 
 note "sha256:"
 shasum -a 256 "${ZIP[0]}" "${DMG[0]}" | tee -a "$REPORT"
